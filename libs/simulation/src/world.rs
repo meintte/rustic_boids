@@ -3,6 +3,7 @@ use crate::*;
 #[derive(Debug)]
 pub struct World {
     pub(crate) boids: Vec<Boid>,
+    pub(crate) boundary_condition: BoundaryCondition,
 }
 
 impl World {
@@ -11,6 +12,7 @@ impl World {
             boids: (0..config.world_boid_count)
                 .map(|_| Boid::random(config, rng))
                 .collect(),
+            boundary_condition: config.world_boundary_condition,
         }
     }
 

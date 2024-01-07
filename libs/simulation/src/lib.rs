@@ -1,6 +1,7 @@
-pub use self::{boid::*, config::*, world::*};
+pub use self::{boid::*, boundary_condition::*, config::*, world::*};
 
 mod boid;
+mod boundary_condition;
 mod config;
 mod world;
 
@@ -11,6 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct Simulation {
     config: Config,
     world: World,
+    running: bool,
     time: f32,
 }
 
@@ -20,6 +22,7 @@ impl Simulation {
         Self {
             config,
             world,
+            running: true,
             time: 0.0,
         }
     }
@@ -33,14 +36,14 @@ impl Simulation {
     }
 
     pub fn step(&mut self, dt: f32) {
-        self.time += dt;
-        self.world.boids.iter_mut().for_each(|b| b.update(dt));
+        if !self.running {
+            return;
+        }
 
-        // periodic boundaries
-        self.world.boids.iter_mut().for_each(|boid| {
-            let p = boid.position();
-            boid.position.x = na::wrap(p.x, 0.0, 1.0);
-            boid.position.y = na::wrap(p.y, 0.0, 1.0);
+        self.time += dt;
+        self.world.boids.iter_mut().for_each(|b| {
+            b.update(dt);
+            self.world.boundary_condition.apply(b);
         });
     }
 }
