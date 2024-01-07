@@ -9,6 +9,9 @@ pub struct Boid {
 impl From<&sim::Boid> for Boid {
     fn from(boid: &sim::Boid) -> Self {
         let p = boid.position();
-        Self { x: p.x, y: p.y }
+        Self {
+            x: p.x,
+            y: 1.0 - p.y,
+        }
     }
 }
